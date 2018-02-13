@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gustavoalves.cursomc.domain.Cliente;
 import com.gustavoalves.cursomc.services.ClienteService;
 
 @RestController
