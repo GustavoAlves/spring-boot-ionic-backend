@@ -1,9 +1,11 @@
 package com.gustavoalves.cursomc.services;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +45,13 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 	
 	@Autowired
-	private S3Service s3Service; 
+	private S3Service s3Service;
+	
+	@Autowired
+	private ImageService imageService;
+	
+	@Value("${img.prefix.client.profile}")
+	private String prefix;
 
 	public Cliente find(Integer id) {
 		UserSS user = UserService.authenticated();
@@ -130,12 +138,10 @@ public class ClienteService {
 			throw new AuthorizationException("Acesso negado");
 		}
 		
-		URI uri = s3Service.uploadFile(multipartFile);
-		Cliente cli = repo.findOne(user.getId());
-		cli.setImageURL(uri.toString());
-		repo.save(cli);
+		BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+		String fileName = prefix + user.getId() + ".jpg";
 		
-		return uri;
+		return s3Service.uploadFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image");
 	}
 
 }
