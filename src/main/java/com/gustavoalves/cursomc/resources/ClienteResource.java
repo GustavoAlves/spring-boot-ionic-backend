@@ -24,6 +24,8 @@ import com.gustavoalves.cursomc.dto.ClienteDTO;
 import com.gustavoalves.cursomc.dto.ClienteNewDTO;
 import com.gustavoalves.cursomc.services.ClienteService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping(value = "/clientes")
 public class ClienteResource {
@@ -31,16 +33,19 @@ public class ClienteResource {
 	@Autowired
 	private ClienteService service;
 
+	@ApiOperation(value = "Busca por id")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Cliente> find(@PathVariable Integer id) {
 		return ResponseEntity.ok().body(service.find(id));
 	}
 	
+	@ApiOperation(value = "Busca por email")
 	@RequestMapping(value = "/email", method = RequestMethod.GET)
 	public ResponseEntity<Cliente> find(@RequestParam(value = "value") String email) {
 		return ResponseEntity.ok().body(service.findByEmail(email));
 	}
 	
+	@ApiOperation(value = "Insere cliente")
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO objDto) {
 		Cliente obj = service.fromDTO(objDto);
@@ -50,6 +55,7 @@ public class ClienteResource {
 		return ResponseEntity.created(uri).build();
 	}
 	
+	@ApiOperation(value = "Atualiza cliente")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO objDto, @PathVariable Integer id) {
 		Cliente obj = service.fromDTO(objDto);
@@ -59,6 +65,7 @@ public class ClienteResource {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value = "Deleta cliente")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
@@ -66,6 +73,7 @@ public class ClienteResource {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value = "Retorna todos clientes")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<ClienteDTO>> findAll() {
 		List<Cliente> list = service.findAll();
@@ -75,6 +83,7 @@ public class ClienteResource {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value = "Retorna todos clientes com paginação")
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
 	public ResponseEntity<Page<ClienteDTO>> findPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
@@ -86,6 +95,7 @@ public class ClienteResource {
 		return ResponseEntity.ok().body(listDto);
 	}
 	
+	@ApiOperation(value = "Insere foto de perfil do cliente")
 	@RequestMapping(value = "/picture", method = RequestMethod.POST)
 	public ResponseEntity<Void> uploadProfilePicture(@RequestParam(name="file") MultipartFile file) {
 		URI uri = service.uploadProfilePicture(file);
