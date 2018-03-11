@@ -23,6 +23,8 @@ import com.gustavoalves.cursomc.dto.CategoriaDTO;
 import com.gustavoalves.cursomc.services.CategoriaService;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(value = "/categorias")
@@ -60,6 +62,9 @@ public class CategoriaResource {
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@ApiOperation(value = "Deleta categoria")
+	@ApiResponses(value = {
+			@ApiResponse(code = 400, message = "Não é possível excluir uma categoria que possui produtos"),
+			@ApiResponse(code = 404, message = "Código inexistente") })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
@@ -75,7 +80,6 @@ public class CategoriaResource {
 		return ResponseEntity.ok().body(listDto);
 	}
 
-	
 	@ApiOperation(value = "Retorna todas categorias com paginação")
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
 	public ResponseEntity<Page<CategoriaDTO>> findPage(
